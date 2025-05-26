@@ -4,15 +4,15 @@ pipeline {
     environment {
         NETWORK_NAME = 'app-network'
         CONTAINER_NAME = 'container-dfp-backend'
-        ENV_FILE = 'ENV_CREDENTIALS'
+        ENV_FILE = 'ENV_FILE'
     }
 
     stages {
 
         stage('Preparar Env File') {
             steps {
-                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'ENV_CREDENTIALS')]) {
-                    sh 'cp $ENV_CREDENTIALS .env'
+                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'ENV_FILE')]) {
+                    sh 'cp $ENV_FILE .env'
                 }
             }
         }
