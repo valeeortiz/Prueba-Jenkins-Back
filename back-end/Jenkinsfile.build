@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "image-dfp-backend"
+    }
+
+        stage('Construir imagen Docker') {
+            steps {
+                sh "cd back-end"
+                sh "docker build -t ${IMAGE_NAME}:${BUILD_ID} ."
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+    }
+}

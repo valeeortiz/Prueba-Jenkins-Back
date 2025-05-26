@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    environment {
+        NETWORK_NAME = 'app-network'
+        CONTAINER_NAME = 'container-dfp-backend'
+        ENV_FILE = 'ENV_FILE'
+    }
+
+    stages {
+
+        stage('Preparar Env File') {
+            steps {
+                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'ENV_FILE')]) {
+                    sh 'cp $ENV_FILE .env'
+                }
+            }
+        }
+
+        stage('Verificar y Crear Red si no Existe') {
+            steps {
+                script {
+
+                    def networkExists = sh(script: "docker network ls --format '{{.Name}}' | grep -w $NETWORK_NAME || true", returnStdout: true).trim()
+                    if (!networkExists) {
+                        sh "docker network create $NETWORK_NAME"
+                        echo "Red '$NETWORK_NAME' creada."
+                    } else {
+                        echo "Red '$NETWORK_NAME' ya existe."
+                    }
+                }
+            }
+        }
+
+        stage('Reiniciar Contenedor del Proyecto') {
+            steps {
+                script {
+                    def isRunning = sh(script: "docker ps --format '{{.Names}}' | grep -w $CONTAINER_NAME || true", returnStdout: true).trim()
+                    def exists = sh(script: "docker ps -a --format '{{.Names}}' | grep -w $CONTAINER_NAME || true", returnStdout: true).trim()
+
+                    if (isRunning) {
+                        echo "Contenedor '$CONTAINER_NAME' está corriendo. Deteniéndolo..."
+                        sh "docker stop $CONTAINER_NAME"
+                    }
+
+                    if (exists) {
+                        echo "Contenedor '$CONTAINER_NAME' existe. Eliminándolo..."
+                        sh "docker rm $CONTAINER_NAME"
+                    } else {
+                        echo "Contenedor '$CONTAINER_NAME' no existe. Se creará con docker-compose."
+                    }
+                }
+            }
+        }
+
+        stage('Desplegar con Docker Compose') {
+            steps {
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+}

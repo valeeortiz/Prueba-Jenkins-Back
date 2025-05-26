@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Pipeline') {
+            steps {
+                build job: 'build-node-app'
+            }
+        }
+
+        stage('Deploy Pipeline') {
+            steps {
+                build job: 'deploy-node-app'
+            }
+        }
+    }
+}
