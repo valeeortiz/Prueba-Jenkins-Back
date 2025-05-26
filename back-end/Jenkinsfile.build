@@ -5,6 +5,8 @@ pipeline {
         IMAGE_NAME = "image-dfp-backend"
     }
 
+    stages{
+
         stage('Construir imagen Docker') {
             steps {
                 sh "cd back-end"
