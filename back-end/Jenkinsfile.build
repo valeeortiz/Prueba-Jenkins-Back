@@ -5,18 +5,20 @@ pipeline {
         IMAGE_NAME = "image-dfp-backend"
     }
 
-    stages{
-
-        stage('Construir imagen Docker') {
+    stages {
+        stage('Install Dependencies') {
             steps {
-                sh "cd back-end"
-                sh "docker build -t ${IMAGE_NAME}:${BUILD_ID} ."
+                dir('back-end') {
+                    sh 'npm install'
+                }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh 'npm install'
+                dir('back-end') {
+                    sh "docker build -t ${IMAGE_NAME}:${BUILD_ID} ."
+                }
             }
         }
     }
