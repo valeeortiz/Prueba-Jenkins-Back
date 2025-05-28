@@ -21,9 +21,9 @@ pipeline {
             steps {
                 script {
 
-                    def networkExists = sh(script: "docker network ls --format '{{.Name}}' | grep -w $NETWORK_NAME || true", returnStdout: true).trim()
+                    def networkExists = bat(script: "docker network ls --format '{{.Name}}' | grep -w $NETWORK_NAME || true", returnStdout: true).trim()
                     if (!networkExists) {
-                        sh "docker network create $NETWORK_NAME"
+                        bat "docker network create $NETWORK_NAME"
                         echo "Red '$NETWORK_NAME' creada."
                     } else {
                         echo "Red '$NETWORK_NAME' ya existe."
@@ -40,12 +40,12 @@ pipeline {
 
                     if (isRunning) {
                         echo "Contenedor '$CONTAINER_NAME' está corriendo. Deteniéndolo..."
-                        sh "docker stop $CONTAINER_NAME"
+                        bat "docker stop $CONTAINER_NAME"
                     }
 
                     if (exists) {
                         echo "Contenedor '$CONTAINER_NAME' existe. Eliminándolo..."
-                        sh "docker rm $CONTAINER_NAME"
+                        bat "docker rm $CONTAINER_NAME"
                     } else {
                         echo "Contenedor '$CONTAINER_NAME' no existe. Se creará con docker-compose."
                     }
@@ -55,7 +55,7 @@ pipeline {
 
         stage('Desplegar con Docker Compose') {
             steps {
-                sh 'docker-compose up -d'
+                bat 'docker-compose up -d'
             }
         }
     }
