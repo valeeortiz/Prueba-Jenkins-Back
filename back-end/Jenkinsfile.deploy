@@ -11,8 +11,8 @@ pipeline {
 
         stage('Preparar Env File') {
             steps {
-                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'ENV_FILE')]) {
-                    sh 'cp $ENV_FILE .env'
+                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'ENV_FILE_PATH')]) {
+                    bat 'copy %ENV_FILE_PATH% .env'
                 }
             }
         }
@@ -20,13 +20,16 @@ pipeline {
         stage('Verificar y Crear Red si no Existe') {
             steps {
                 script {
+                    def networkExists = bat(
+                        script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"%NETWORK_NAME%\" || exit 0",
+                        returnStdout: true
+                    ).trim()
 
-                    def networkExists = bat(script: "docker network ls --format '{{.Name}}' | grep -w $NETWORK_NAME || true", returnStdout: true).trim()
                     if (!networkExists) {
-                        bat "docker network create $NETWORK_NAME"
-                        echo "Red '$NETWORK_NAME' creada."
+                        bat "docker network create %NETWORK_NAME%"
+                        echo "Red '%NETWORK_NAME%' creada."
                     } else {
-                        echo "Red '$NETWORK_NAME' ya existe."
+                        echo "Red '%NETWORK_NAME%' ya existe."
                     }
                 }
             }
@@ -35,19 +38,26 @@ pipeline {
         stage('Reiniciar Contenedor del Proyecto') {
             steps {
                 script {
-                    def isRunning = sh(script: "docker ps --format '{{.Names}}' | grep -w $CONTAINER_NAME || true", returnStdout: true).trim()
-                    def exists = sh(script: "docker ps -a --format '{{.Names}}' | grep -w $CONTAINER_NAME || true", returnStdout: true).trim()
+                    def isRunning = bat(
+                        script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"%CONTAINER_NAME%\" || exit 0",
+                        returnStdout: true
+                    ).trim()
+
+                    def exists = bat(
+                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"%CONTAINER_NAME%\" || exit 0",
+                        returnStdout: true
+                    ).trim()
 
                     if (isRunning) {
-                        echo "Contenedor '$CONTAINER_NAME' está corriendo. Deteniéndolo..."
-                        bat "docker stop $CONTAINER_NAME"
+                        echo "Contenedor '%CONTAINER_NAME%' está corriendo. Deteniéndolo..."
+                        bat "docker stop %CONTAINER_NAME%"
                     }
 
                     if (exists) {
-                        echo "Contenedor '$CONTAINER_NAME' existe. Eliminándolo..."
-                        bat "docker rm $CONTAINER_NAME"
+                        echo "Contenedor '%CONTAINER_NAME%' existe. Eliminándolo..."
+                        bat "docker rm %CONTAINER_NAME%"
                     } else {
-                        echo "Contenedor '$CONTAINER_NAME' no existe. Se creará con docker-compose."
+                        echo "Contenedor '%CONTAINER_NAME%' no existe. Se creará con docker-compose."
                     }
                 }
             }
