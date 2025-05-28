@@ -6,7 +6,8 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
+
+        stage('Instalar dependencias') {
             steps {
                 dir('back-end') {
                     bat 'npm install'
@@ -14,7 +15,15 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Compilar proyecto') {
+            steps {
+                dir('back-end') {
+                    bat 'npm run build'
+                }
+            }
+        }
+
+        stage('Construir imagen Docker') {
             steps {
                 dir('back-end') {
                     bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
