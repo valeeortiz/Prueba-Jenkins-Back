@@ -2,16 +2,15 @@ version: '3.8'
 
 services:
   prueba-jenkins-back:
-    build: .
+    build: 
+      context: ./back-end/dist
     container_name: container-dfp-backend
     depends_on:
       - elasticsearch
-    env_file:
-      - .env
     ports:
       - "3000:3000"
     networks:
-      - test-network
+      - app-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
@@ -21,15 +20,15 @@ services:
     ports:
       - "9200:9200"
     networks:
-      - test-network
+      - app-network
 
   grafana:
     image: grafana/grafana
     ports:
       - "3001:3000"
     networks:
-      - test-network
+      - app-network
 
 networks:
-  test-network:
+  app-network:
     driver: bridge
