@@ -23,6 +23,18 @@ pipeline {
             }
         }
 
+        stage('Verificar carpeta dist') {
+            steps {
+                dir('back-end') {
+                    bat 'echo Verificando contenido de back-end:'
+                    bat 'dir'
+                    bat 'echo Verificando contenido de dist:'
+                    bat 'dir dist'
+                }
+            }
+        }
+
+
         stage('Construir imagen Docker') {
             steps {
                 dir('back-end') {
