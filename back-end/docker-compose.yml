@@ -3,7 +3,7 @@ version: '3.9'
 services:
   prueba-jenkins-back:
     build: 
-      context: ./dist
+      context: ./back-end/dist
     container_name: container-dfp-backend
     depends_on:
       - elasticsearch
