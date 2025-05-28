@@ -8,18 +8,17 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-
-                bat "cd back-end"
-                bat "npm run install"
+                dir('back-end') {
+                    bat 'npm install'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                
-                bat "cd back-end"
-                bat "docker build -t ${IMAGE_NAME}:${BUILD_ID} ."
-                
+                dir('back-end') {
+                    bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
+                }
             }
         }
     }
