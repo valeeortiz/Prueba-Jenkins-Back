@@ -22,13 +22,13 @@ pipeline {
             steps {
                 script {
                     def networkExists = bat(
-                        script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"${env.NETWORK_NAME}\" || exit 0",
-                        returnStdout: true
+                    script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"${env.NETWORK_NAME}\" >nul && echo FOUND || echo NOTFOUND",
+                    returnStdout: true
                     ).trim()
 
-                    if (!networkExists) {
+                    if (networkExists == "NOTFOUND") {
+                        echo "Red no existe, creando..."
                         bat "docker network create ${env.NETWORK_NAME}"
-                        echo "Red '${env.NETWORK_NAME}' creada."
                     } else {
                         echo "Red '${env.NETWORK_NAME}' ya existe."
                     }
@@ -41,25 +41,25 @@ pipeline {
             steps {
                 script {
                     def isRunning = bat(
-                        script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || exit 0",
-                        returnStdout: true
+                    script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" >nul && echo RUNNING || echo NOTRUNNING",
+                    returnStdout: true
                     ).trim()
 
                     def exists = bat(
-                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || exit 0",
+                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" >nul && echo EXISTS || echo NOTEXISTS",
                         returnStdout: true
                     ).trim()
 
-                    if (isRunning) {
-                        echo "Contenedor '${env.CONTAINER_NAME}' está corriendo. Deteniéndolo..."
+                    if (isRunning == "RUNNING") {
+                        echo "Contenedor está corriendo. Deteniéndolo..."
                         bat "docker stop ${env.CONTAINER_NAME}"
                     }
 
-                    if (exists) {
-                        echo "Contenedor '${env.CONTAINER_NAME}' existe. Eliminándolo..."
+                    if (exists == "EXISTS") {
+                        echo "Contenedor existe. Eliminándolo..."
                         bat "docker rm ${env.CONTAINER_NAME}"
                     } else {
-                        echo "Contenedor '${env.CONTAINER_NAME}' no existe. Se creará con docker-compose."
+                        echo "Contenedor no existe. Se creará con docker-compose."
                     }
                 }
             }
