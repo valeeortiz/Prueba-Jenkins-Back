@@ -22,8 +22,8 @@ pipeline {
             steps {
                 script {
                     def networkExists = bat(
-                        script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"${env.NETWORK_NAME}\" || true",
-                        //returnStdout: true
+                        script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"${env.NETWORK_NAME}\" || exit 0",
+                        returnStdout: true
                     ).trim()
 
                     if (!networkExists) {
@@ -41,13 +41,13 @@ pipeline {
             steps {
                 script {
                     def isRunning = bat(
-                        script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || true",
-                        //returnStdout: true
+                        script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || exit 0",
+                        returnStdout: true
                     ).trim()
 
                     def exists = bat(
-                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || true",
-                        //returnStdout: true
+                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\" || exit 0",
+                        returnStdout: true
                     ).trim()
 
                     if (isRunning) {
