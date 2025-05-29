@@ -30,9 +30,9 @@ pipeline{
         stage('Verificar y Crear Red si no Existe') {
             steps {
                 script {
-                    def status = bat(
-                        script: "docker network ls --format \"{{.Name}}\" | findstr /B /C:\"${env.NETWORK_NAME}\"",
-                        returnStatus: true
+                    def status = sh(
+                    script: "docker network ls --format '{{.Name}}' | grep -w "${env.NETWORK_NAME}"",
+                    returnStatus: true
                     )
                     if (status != 0) {
                         sh 'docker network create ${env.NETWORK_NAME}'
