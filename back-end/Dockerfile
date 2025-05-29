@@ -2,9 +2,11 @@ FROM node:18-alpine
 
 WORKDIR /project-back-end
 
-COPY . .
+COPY package*.json ./
 
 RUN npm install
+
+COPY . .
 
 EXPOSE 3000
 
