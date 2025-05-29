@@ -25,21 +25,6 @@ pipeline{
             }
         }
 
-
-        stage('Comprimir artefactos') {
-            steps {
-                    sh 'tar czf dist.tar.gz back-end'        
-            }
-        }
-
-        stage('Publicar artefactos') {
-            steps {
-                dir('back-end'){
-                    archiveArtifacts artifacts: 'dist.tar.gz', fingerprint: true
-                }
-            }
-        }
-
         stage('Construir imagen Docker') {
             steps {
                 dir('back-end') {
