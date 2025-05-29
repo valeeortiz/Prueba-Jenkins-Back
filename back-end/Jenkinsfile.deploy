@@ -27,20 +27,16 @@ pipeline{
             }
         }
 
-        stage('Verificar y Crear Red si no Existe') {
+       stage('Verificar y Crear Red si no Existe') {
             steps {
-                script {
-                    def status = sh(
-                    script: "docker network ls --format '{{.Name}}' | sed -n '/^${env.NETWORK_NAME}\$/p' > /dev/null",
-                    returnStatus: true
-                    )
-                    if (status != 0) {
-                        sh 'docker network create ${env.NETWORK_NAME}'
-                        echo 'Red '${env.NETWORK_NAME}' creada.'
-                    } else {
-                        echo 'Red '${env.NETWORK_NAME}' ya existe.'
-                    }
-                }
+                sh '''
+                    if ! docker network ls --format '{{.Name}}' | sed -n "/^${NETWORK_NAME}$/p" > /dev/null; then
+                        docker network create ${NETWORK_NAME}
+                        echo "Red ${NETWORK_NAME} creada."
+                    else
+                        echo "Red ${NETWORK_NAME} ya existe."
+                    fi
+                '''
             }
         }
 
