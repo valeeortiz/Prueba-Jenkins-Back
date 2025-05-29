@@ -25,9 +25,8 @@ pipeline{
 
         stage('Comprimir artefactos') {
             steps {
-                dir('back-end'){
                     sh 'tar czf dist.tar.gz back-end'
-                }
+                
             }
         }
 
