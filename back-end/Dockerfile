@@ -2,10 +2,10 @@ FROM node:18-alpine
 
 WORKDIR /project-back-end
 
-COPY package*.json ./
-RUN npm install --production
+COPY . .
 
-COPY ./dist ./dist
+RUN npm install
 
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+
+CMD ["npm", "run", "start:dev"]

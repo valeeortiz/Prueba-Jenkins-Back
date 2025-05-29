@@ -22,21 +22,11 @@ pipeline{
             }
         }
 
-        stage('Verificar carpeta dist') {
-            steps {
-                dir('back-end') {
-                    sh 'echo Verificando contenido de back-end:'
-                    sh 'cd'
-                    sh 'echo Verificando contenido de dist:'
-                    sh 'cd dist'
-                }
-            }
-        }
 
         stage('Comprimir artefactos') {
             steps {
                 dir('back-end'){
-                    sh 'tar czf dist.tar.gz dist'
+                    sh 'tar czf dist.tar.gz back-end'
                 }
             }
         }
