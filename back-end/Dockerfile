@@ -2,10 +2,10 @@ FROM node:18-alpine
 
 WORKDIR /project-back-end
 
-COPY ./dist ./dist
-COPY ./node_modules ./node_modules
 COPY package*.json ./
+RUN npm install --production
+
+COPY ./dist ./dist
 
 EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/main.js"]
