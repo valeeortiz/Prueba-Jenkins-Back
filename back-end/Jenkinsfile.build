@@ -35,7 +35,7 @@ pipeline{
 
          stage('Preparar Env File') {
             steps {
-                sh sh 'cp $ENV_FILE .env'
+                sh 'cp $ENV_FILE .env'
             }
         }
 
