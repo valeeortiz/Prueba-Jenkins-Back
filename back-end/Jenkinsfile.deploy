@@ -31,7 +31,7 @@ pipeline{
             steps {
                 script {
                     def status = sh(
-                    script: "docker network ls --format '{{.Name}}' | sed -n '/^${env.NETWORK_NAME}$/p' > /dev/null",
+                    script: "docker network ls --format '{{.Name}}' | sed -n '/^${env.NETWORK_NAME}\$/p' > /dev/null",
                     returnStatus: true
                     )
                     if (status != 0) {
