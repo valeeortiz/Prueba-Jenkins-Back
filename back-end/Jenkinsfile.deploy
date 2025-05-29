@@ -9,7 +9,7 @@ stages {
     stage('Copiar artefactos del build') {
         steps {
             copyArtifacts(
-                projectName: 'deploy-node-app', 
+                projectName: 'build-node-app', 
                 selector: lastSuccessful()
             )
         }
