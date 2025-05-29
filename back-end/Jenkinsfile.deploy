@@ -1,4 +1,5 @@
 pipeline{
+    agent any
     environment {
         NETWORK_NAME = 'app-network'
         CONTAINER_NAME = 'container-dfp-backend'
