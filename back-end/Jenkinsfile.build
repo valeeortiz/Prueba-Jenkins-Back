@@ -35,7 +35,9 @@ pipeline{
 
          stage('Preparar Env File') {
             steps {
-                sh 'cp $ENV_FILE .env'
+                withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
+                    sh 'cp $SECRET_FILE back-end/.env'
+                }
             }
         }
 
