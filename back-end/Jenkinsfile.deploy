@@ -70,9 +70,7 @@ pipeline{
 
         stage('Desplegar con Docker Compose') {
             steps {
-                dir('back-end') {
-                    sh 'docker-compose up -d'
-                }
+                sh 'docker-compose up -d'
             }
         }
     }
