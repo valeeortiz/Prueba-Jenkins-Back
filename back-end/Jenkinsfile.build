@@ -31,9 +31,15 @@ stages {
         }
     }
 
-     stage('Comprimir artefactos') {
+    stage('Comprimir artefactos') {
         steps {
             bat 'powershell -Command "Compress-Archive -Path back-end\\* -DestinationPath build_artifacts.zip -Force"'
+        }
+    }
+
+    stage('Publicar artefactos') {
+        steps {
+            archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
         }
     }
 
@@ -45,10 +51,5 @@ stages {
         }
     }
 
-    stage('Publicar artefactos') {
-        steps {
-            archiveArtifacts artifacts: 'back-end/dist/**', fingerprint: true
-        }
-    }
 
 }
