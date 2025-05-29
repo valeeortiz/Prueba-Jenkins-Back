@@ -43,7 +43,9 @@ pipeline{
 
         stage('Publicar artefactos') {
             steps {
-                archiveArtifacts artifacts: 'dist.tar.gz', fingerprint: true
+                dir('back-end'){
+                    archiveArtifacts artifacts: 'dist.tar.gz', fingerprint: true
+                }
             }
         }
 
