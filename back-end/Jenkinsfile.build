@@ -33,10 +33,10 @@ pipeline{
             }
         }
 
-         stage('Preparar Env File') {
+          stage('Preparar Env File') {
             steps {
                 withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
-                    sh 'cp $SECRET_FILE back-end/.env'
+                    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
                 }
             }
         }
