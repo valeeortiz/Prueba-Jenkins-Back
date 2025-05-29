@@ -1,46 +1,47 @@
-pipeline {
-    agent any
+environment {
+    IMAGE_NAME = "image-dfp-backend"
+}
 
-    environment {
-        IMAGE_NAME = "image-dfp-backend"
+stages {
+
+    stage('Instalar dependencias') {
+        steps {
+            dir('back-end') {
+                bat 'npm install'
+            }
+        }
     }
 
-    stages {
-
-        stage('Instalar dependencias') {
-            steps {
-                dir('back-end') {
-                    bat 'npm install'
-                }
+    stage('Compilar proyecto') {
+        steps {
+            dir('back-end') {
+                bat 'npm run build'
             }
         }
+    }
 
-        stage('Compilar proyecto') {
-            steps {
-                dir('back-end') {
-                    bat 'npm run build'
-                }
+    stage('Verificar carpeta dist') {
+        steps {
+            dir('back-end') {
+                bat 'echo Verificando contenido de back-end:'
+                bat 'dir'
+                bat 'echo Verificando contenido de dist:'
+                bat 'dir dist'
             }
         }
+    }
 
-        stage('Verificar carpeta dist') {
-            steps {
-                dir('back-end') {
-                    bat 'echo Verificando contenido de back-end:'
-                    bat 'dir'
-                    bat 'echo Verificando contenido de dist:'
-                    bat 'dir dist'
-                }
+    stage('Construir imagen Docker') {
+        steps {
+            dir('back-end') {
+                bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
             }
         }
+    }
 
-
-        stage('Construir imagen Docker') {
-            steps {
-                dir('back-end') {
-                    bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
-                }
-            }
+    stage('Publicar artefactos') {
+        steps {
+            archiveArtifacts artifacts: 'back-end/**', fingerprint: true
         }
     }
 }
