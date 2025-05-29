@@ -6,18 +6,16 @@ environment {
 
 stages {
 
-    stage('Copiar y descomprimir artefactos del build') {
+    stage('Copiar carpeta dist del build') {
         steps {
             script {
                 step([$class: 'CopyArtifact',
-                    projectName: 'build-node-app', 
-                    filter: 'build_artifacts.zip',
-                    target: '.',
-                    selector: [$class: 'LastSuccessfulBuildSelector']
+                projectName: 'build-node-app', 
+                filter: 'back-end/dist/**',
+                target: 'back-end/dist',
+                selector: [$class: 'LastSuccessfulBuildSelector']
                 ])
             }
-
-            bat 'powershell -Command "Expand-Archive -Path build_artifacts.zip -DestinationPath . -Force"'
         }
     }
 

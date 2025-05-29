@@ -37,17 +37,17 @@ stages {
         }
     }
 
-    stage('Publicar artefactos') {
-        steps {
-            archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
-        }
-    }
-
     stage('Construir imagen Docker') {
         steps {
             dir('back-end') {
                 bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
             }
+        }
+    }
+
+    stage('Publicar artefactos') {
+        steps {
+            archiveArtifacts artifacts: 'back-end/dist/**', fingerprint: true
         }
     }
 
