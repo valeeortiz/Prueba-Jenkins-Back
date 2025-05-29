@@ -9,7 +9,7 @@ pipeline{
         stage('Instalar dependencias') {
             steps {
                 dir('back-end') {
-                    bat 'npm install'
+                    sh 'npm install'
                 }
             }
         }
@@ -17,7 +17,7 @@ pipeline{
         stage('Compilar proyecto') {
             steps {
                 dir('back-end') {
-                    bat 'npm run build'
+                    sh 'npm run build'
                 }
             }
         }
@@ -25,30 +25,32 @@ pipeline{
         stage('Verificar carpeta dist') {
             steps {
                 dir('back-end') {
-                    bat 'echo Verificando contenido de back-end:'
-                    bat 'dir'
-                    bat 'echo Verificando contenido de dist:'
-                    bat 'dir dist'
+                    sh 'echo Verificando contenido de back-end:'
+                    sh 'cd'
+                    sh 'echo Verificando contenido de dist:'
+                    sh 'cd dist'
                 }
             }
         }
 
         stage('Comprimir artefactos') {
             steps {
-                bat 'powershell -Command "Compress-Archive -Path back-end\\* -DestinationPath build_artifacts.zip -Force"'
+                dir('back-end'){
+                    sh 'tar czf dist.tar.gz dist'
+                }
             }
         }
 
         stage('Publicar artefactos') {
             steps {
-                archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
+                archiveArtifacts artifacts: 'dist.tar.gz', fingerprint: true
             }
         }
 
         stage('Construir imagen Docker') {
             steps {
                 dir('back-end') {
-                    bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
+                    sh 'docker build -t $IMAGE_NAME:$BUILD_ID .'
                 }
             }
         }

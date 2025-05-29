@@ -13,9 +13,9 @@ pipeline{
                 copyArtifacts(
                 projectName: 'build-node-app',
                 selector: lastSuccessful(),
-                filter: 'build-artifacts.zip'
+                filter: 'dist.tar.gz'
                 )
-                bat 'powershell -Command "Expand-Archive -Path build_artifacts.zip -DestinationPath . -Force"'
+                sh 'tar xzf dist.tar.gz'
             }
         }
 
@@ -35,10 +35,10 @@ pipeline{
                         returnStatus: true
                     )
                     if (status != 0) {
-                        bat "docker network create ${env.NETWORK_NAME}"
-                        echo "Red '${env.NETWORK_NAME}' creada."
+                        sh 'docker network create ${env.NETWORK_NAME}'
+                        echo 'Red '${env.NETWORK_NAME}' creada.'
                     } else {
-                        echo "Red '${env.NETWORK_NAME}' ya existe."
+                        echo 'Red '${env.NETWORK_NAME}' ya existe.'
                     }
                 }
             }
@@ -47,24 +47,24 @@ pipeline{
         stage('Reiniciar Contenedor del Proyecto') {
             steps {
                 script {
-                    def isRunning = bat(
+                    def isRunning = sh(
                         script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\"",
                         returnStatus: true
                     )
 
-                    def exists = bat(
+                    def exists = sh(
                         script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\"",
                         returnStatus: true
                     )
 
                     if (isRunning == 0) {
                         echo "Contenedor '${env.CONTAINER_NAME}' está corriendo. Deteniéndolo..."
-                        bat "docker stop ${env.CONTAINER_NAME}"
+                        sh "docker stop ${env.CONTAINER_NAME}"
                     }
 
                     if (exists == 0) {
                         echo "Contenedor '${env.CONTAINER_NAME}' existe. Eliminándolo..."
-                        bat "docker rm ${env.CONTAINER_NAME}"
+                        sh "docker rm ${env.CONTAINER_NAME}"
                     } else {
                         echo "Contenedor '${env.CONTAINER_NAME}' no existe. Se creará con docker-compose."
                     }
@@ -75,7 +75,7 @@ pipeline{
         stage('Desplegar con Docker Compose') {
             steps {
                 dir('back-end') {
-                    bat 'docker-compose up -d'
+                    sh 'docker-compose up -d'
                 }
             }
         }
