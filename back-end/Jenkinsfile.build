@@ -52,7 +52,7 @@ pipeline{
         stage('Construir imagen Docker') {
             steps {
                 dir('back-end') {
-                    sh 'docker build -t $IMAGE_NAME:$BUILD_ID .'
+                    sh 'docker build -t $IMAGE_NAME:latest .'
                 }
             }
         }
