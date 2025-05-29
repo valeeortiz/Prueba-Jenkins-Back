@@ -8,16 +8,16 @@ pipeline{
 
     stages {
 
-        stage('Copiar y descomprimir artefactos del build') {
-            steps {
-                copyArtifacts(
-                projectName: 'build-node-app',
-                selector: lastSuccessful(),
-                filter: 'dist.tar.gz'
-                )
-                sh 'tar xzf dist.tar.gz'
-            }
-        }
+       // stage('Copiar y descomprimir artefactos del build') {
+        //    steps {
+          //      copyArtifacts(
+            //    projectName: 'build-node-app',
+              //  selector: lastSuccessful(),
+               // filter: 'dist.tar.gz'
+                //)
+               // sh 'tar xzf dist.tar.gz'
+           // }
+        //}
 
         stage('Preparar Env File') {
             steps {
