@@ -21,6 +21,9 @@ pipeline{
             steps {
                 dir('back-end') {
                     sh 'npm run build'
+                    withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
+                    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
+                }
                 }
             }
         }
@@ -33,13 +36,13 @@ pipeline{
             }
         }
 
-          stage('Preparar Env File') {
-            steps {
-                withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
-                    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
-                }
-            }
-        }
+          //stage('Preparar Env File') {
+            //steps {
+              //  withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
+                //    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
+                //}
+            //}
+       // }
 
        stage('Verificar y Crear Red si no Existe') {
             steps {
