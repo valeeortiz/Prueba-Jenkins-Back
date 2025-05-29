@@ -36,7 +36,10 @@ pipeline{
          stage('Preparar Env File') {
             steps {
                 withCredentials([file(credentialsId: env.ENV_FILE, variable: 'SECRET_FILE')]) {
-                    sh 'cp $SECRET_FILE .env' 
+                    bat '''
+                    set SECRET_FILE=%SECRET_FILE%
+                    powershell -Command "Copy-Item -Path $env:SECRET_FILE -Destination .env"
+                    '''
                 }
             }
         }
