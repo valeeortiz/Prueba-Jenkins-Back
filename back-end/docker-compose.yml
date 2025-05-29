@@ -14,6 +14,7 @@ services:
       - ELASTIC_URL=http://elasticsearch:9200
       - ELASTIC_USER=
       - ELASTIC_PASS=
+      - SUPASE_DB_URL=${SUPASE_DB_URL}
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
