@@ -11,13 +11,13 @@ pipeline{
 
         stage('Preparar Env File') {
             steps {
-                dir('back-end') {
-                    withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
-                        bat 'copy "%SECRET_FILE%" ".env"'
-                    }
+                withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
+                    dir('back-end')
+                    bat 'copy "%SECRET_FILE%" ".env"'
                 }
             }
         }
+
 
         stage('Instalar dependencias') {
             steps {
