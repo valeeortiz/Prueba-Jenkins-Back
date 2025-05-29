@@ -2,6 +2,9 @@ pipeline{
     agent any
     environment {
         IMAGE_NAME = "image-dfp-backend"
+        NETWORK_NAME = 'app-network'
+        CONTAINER_NAME = 'container-dfp-backend'
+        ENV_FILE = 'ENV_FILE'
     }
 
     stages {
@@ -41,6 +44,64 @@ pipeline{
             steps {
                 dir('back-end') {
                     sh 'docker build -t $IMAGE_NAME:latest .'
+                }
+            }
+        }
+
+         stage('Preparar Env File') {
+            steps {
+                withCredentials([file(credentialsId: env.ENV_FILE, variable: 'SECRET_FILE')]) {
+                    bat 'powershell -Command "Copy-Item -Path \\"%SECRET_FILE%\\" -Destination \\".env\\""' 
+                }
+            }
+        }
+
+       stage('Verificar y Crear Red si no Existe') {
+            steps {
+                sh '''
+                    if ! docker network ls --format '{{.Name}}' | sed -n "/^${NETWORK_NAME}$/p" > /dev/null; then
+                        docker network create ${NETWORK_NAME}
+                        echo "Red ${NETWORK_NAME} creada."
+                    else
+                        echo "Red ${NETWORK_NAME} ya existe."
+                    fi
+                '''
+            }
+        }
+
+        stage('Reiniciar Contenedor del Proyecto') {
+            steps {
+                script {
+                    def isRunning = sh(
+                        script: "docker ps --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\"",
+                        returnStatus: true
+                    )
+
+                    def exists = sh(
+                        script: "docker ps -a --format \"{{.Names}}\" | findstr /B /C:\"${env.CONTAINER_NAME}\"",
+                        returnStatus: true
+                    )
+
+                    if (isRunning == 0) {
+                        echo "Contenedor '${env.CONTAINER_NAME}' está corriendo. Deteniéndolo..."
+                        sh "docker stop ${env.CONTAINER_NAME}"
+                    }
+
+                    if (exists == 0) {
+                        echo "Contenedor '${env.CONTAINER_NAME}' existe. Eliminándolo..."
+                        sh "docker rm ${env.CONTAINER_NAME}"
+                    } else {
+                        echo "Contenedor '${env.CONTAINER_NAME}' no existe. Se creará con docker-compose."
+                    }
+                }
+            }
+        }
+
+        stage('Desplegar con Docker Compose') {
+            steps {
+                dir('back-end'){
+                    sh 'docker-compose build'
+                    sh 'docker-compose up -d'
                 }
             }
         }
