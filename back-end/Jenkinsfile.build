@@ -33,12 +33,18 @@ pipeline{
             }
         }
 
-          stage('Preparar Env File') {
+        stage('Preparar Env File') {
             steps {
                 withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
-                    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
+                    sh '''
+                    if [ -f "$SECRET_FILE" ]; then
+                        cp $SECRET_FILE back-end/.env
+                        else
+                            echo "Archivo .env no encontrado"; exit 1
+                        fi
+                        '''
+                    }
                 }
-            }
         }
 
        stage('Verificar y Crear Red si no Existe') {
