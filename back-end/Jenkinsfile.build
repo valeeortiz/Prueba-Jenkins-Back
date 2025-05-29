@@ -16,7 +16,7 @@ pipeline{
                 }
             }
         }
-        
+
         stage('Instalar dependencias') {
             steps {
                 dir('back-end') {
@@ -30,9 +30,9 @@ pipeline{
                 dir('back-end') {
                     sh 'npm run build'
                 }
-                }
             }
         }
+        
 
         stage('Construir imagen Docker') {
             steps {
