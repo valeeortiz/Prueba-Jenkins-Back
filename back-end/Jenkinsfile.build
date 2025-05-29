@@ -11,8 +11,10 @@ pipeline{
 
         stage('Preparar Env File') {
             steps {
-                withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
-                    bat 'copy "%SECRET_FILE%" "back-end\\.env"'
+                dir('back-end') {
+                    withCredentials([file(credentialsId: 'ENV_FILE', variable: 'SECRET_FILE')]) {
+                        bat 'copy "%SECRET_FILE%" ".env"'
+                    }
                 }
             }
         }
