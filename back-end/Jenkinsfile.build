@@ -31,6 +31,18 @@ stages {
         }
     }
 
+     stage('Comprimir artefactos') {
+        steps {
+            bat 'powershell -Command "Compress-Archive -Path back-end\\* -DestinationPath build_artifacts.zip -Force"'
+        }
+    }
+
+    stage('Publicar artefactos') {
+        steps {
+            archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
+        }
+    }
+
     stage('Construir imagen Docker') {
         steps {
             dir('back-end') {
@@ -39,9 +51,4 @@ stages {
         }
     }
 
-    stage('Publicar artefactos') {
-        steps {
-            archiveArtifacts artifacts: 'back-end/**', fingerprint: true
-        }
-    }
 }

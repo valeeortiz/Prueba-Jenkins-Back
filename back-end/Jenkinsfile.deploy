@@ -6,12 +6,18 @@ environment {
 
 stages {
 
-    stage('Copiar artefactos del build') {
+    stage('Copiar y descomprimir artefactos del build') {
         steps {
-            copyArtifacts(
-                projectName: 'build-node-app', 
-                selector: lastSuccessful()
-            )
+            script {
+                step([$class: 'CopyArtifact',
+                    projectName: 'build-node-app', 
+                    filter: 'build_artifacts.zip',
+                    target: '.',
+                    selector: [$class: 'LastSuccessfulBuildSelector']
+                ])
+            }
+
+            bat 'powershell -Command "Expand-Archive -Path build_artifacts.zip -DestinationPath . -Force"'
         }
     }
 
