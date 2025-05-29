@@ -1,55 +1,55 @@
-environment {
-    IMAGE_NAME = "image-dfp-backend"
-}
+pipeline{
+    environment {
+        IMAGE_NAME = "image-dfp-backend"
+    }
 
-stages {
+    stages {
 
-    stage('Instalar dependencias') {
-        steps {
-            dir('back-end') {
-                bat 'npm install'
+        stage('Instalar dependencias') {
+            steps {
+                dir('back-end') {
+                    bat 'npm install'
+                }
+            }
+        }
+
+        stage('Compilar proyecto') {
+            steps {
+                dir('back-end') {
+                    bat 'npm run build'
+                }
+            }
+        }
+
+        stage('Verificar carpeta dist') {
+            steps {
+                dir('back-end') {
+                    bat 'echo Verificando contenido de back-end:'
+                    bat 'dir'
+                    bat 'echo Verificando contenido de dist:'
+                    bat 'dir dist'
+                }
+            }
+        }
+
+        stage('Comprimir artefactos') {
+            steps {
+                bat 'powershell -Command "Compress-Archive -Path back-end\\* -DestinationPath build_artifacts.zip -Force"'
+            }
+        }
+
+        stage('Publicar artefactos') {
+            steps {
+                archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
+            }
+        }
+
+        stage('Construir imagen Docker') {
+            steps {
+                dir('back-end') {
+                    bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
+                }
             }
         }
     }
-
-    stage('Compilar proyecto') {
-        steps {
-            dir('back-end') {
-                bat 'npm run build'
-            }
-        }
-    }
-
-    stage('Verificar carpeta dist') {
-        steps {
-            dir('back-end') {
-                bat 'echo Verificando contenido de back-end:'
-                bat 'dir'
-                bat 'echo Verificando contenido de dist:'
-                bat 'dir dist'
-            }
-        }
-    }
-
-    stage('Comprimir artefactos') {
-        steps {
-            bat 'powershell -Command "Compress-Archive -Path back-end\\* -DestinationPath build_artifacts.zip -Force"'
-        }
-    }
-
-    stage('Publicar artefactos') {
-        steps {
-            archiveArtifacts artifacts: 'build_artifacts.zip', fingerprint: true
-        }
-    }
-
-    stage('Construir imagen Docker') {
-        steps {
-            dir('back-end') {
-                bat "docker build -t %IMAGE_NAME%:%BUILD_ID% ."
-            }
-        }
-    }
-
-
 }
